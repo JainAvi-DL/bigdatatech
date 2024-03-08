@@ -1,0 +1,74 @@
+Apache kafka Setup :-
+
+
+1) Download kafka
+
+2) create 2 folders
+
+kafka_logs -- zookeeper
+kafka_logs -- server_logs
+
+
+3) zookeeper.properties (kafka >> config>> here)
+dataDir: E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_logs/zookeeper
+maxClientCnxns=1
+
+This property Limits the number of active connections from the host , specified by IP address, to a single zookeeper server 
+
+
+
+4) server.properties
+uncomment listeners 
+logs.dirs: E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_logs/server_logs
+zookeeper.connect=localhost:2181
+zookeeper.connection.timeout.ms=60000
+
+5) Start Zookeeper
+long path -- is not working 
+"E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_2.13-3.7.0/bin/windows/zookeeper-server-start.bat" "E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_2.13-3.7.0/config/zookeeper.properties"
+
+
+short path :
+E:/kafka_2.13-3.7.0/bin/windows/zookeeper-server-start.bat E:/kafka_2.13-3.7.0/config/zookeeper.properties
+
+
+6) Start kafka-server
+long path -- is not working 
+E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_2.13-3.7.0/bin/windows/kafka-server-start.bat E:/Projects/Apache_kafka_projects/projectByknowledgeAmplifier/kafka_2.13-3.7.0/config/server.properties
+
+
+short path:
+E:\kafka_2.13-3.7.0\bin\windows\kafka-server-start.bat E:\kafka_2.13-3.7.0\config\server.properties
+
+7) create Topic :
+E:\kafka_2.13-3.7.0\bin\windows\kafka-topics.bat --create --topic hello_world --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+
+
+
+8) Start Producer:
+E:\kafka_2.13-3.7.0\bin\windows\kafka-console-producer.bat --topic hello_world --bootstrap-server localhost:9092
+
+9) Start Consumer:
+E:\kafka_2.13-3.7.0\bin\windows\kafka-console-consumer.bat --topic hello_world --from-beginning --bootstrap-server localhost:9092
+
+10)
+kafka-python installation:
+--------------------------------------------------
+pip install kafka-python
+(To know more about this client , you can refer this link :
+https://pypi.org/project/kafka-python/)
+
+Python Code:
+----------------------------------
+from time import sleep
+from json import dumps
+from kafka import KafkaProducer
+
+topic_name='hello_world'
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=lambda x: dumps(x).encode('utf-8'))
+
+for e in range(1000):
+    data = {'number' : e}
+    print(data)
+    producer.send(topic_name, value=data)
+    sleep(5)
